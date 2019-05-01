@@ -17,7 +17,7 @@ title: CSC630 Full Stack App Development
 # email: your-email@example.com
 description: >- # this means to ignore newlines until "baseurl:"
   A blog created for the Spring 2019 CSC630 course covering Full Stack App Development.
-baseurl: "" # the subpath of your site, e.g. /blog
+baseurl: "/csc630_s19_blog" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 github_username:  nzufelt
 
