@@ -1,0 +1,124 @@
+---
+layout: post
+title:  "Understanding dj_database_url"
+date:   2019-05-01 10:41:0 -0400
+author: Jeremy Zhou
+# categories: jekyll update
+---
+# Understanding [`dj_database_url`](https://pypi.org/project/dj-database-url/)
+
+![Django](https://www.djangoproject.com/m/img/logos/django-logo-positive.png)
+
+This blog post is meant for people who are already in the middle of setting up their [Django](https://www.djangoproject.com/) project! If this is not you, I would recommend that you check out [these](https://docs.djangoproject.com/en/2.1/intro/tutorial01/) [three](https://www.digitalocean.com/community/tutorials/how-to-use-postgresql-with-your-django-application-on-ubuntu-14-04) [tutorials](https://devcenter.heroku.com/articles/heroku-postgresql) first. For this blog post, I assume that you are already familiar with the way database configuration works in `settings.py`.
+
+In the course of following a beginner tutorial for hooking Django [Postgres](https://www.postgresql.org/) to [Heroku](https://www.heroku.com/), you may have come across this interesting piece of code:
+
+```
+import dj_database_url
+DATABASES = {
+    'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
+}
+```
+
+as well as something about changing environment variables. What is `dj_database_url`, and why did I have to forsake all my precious configuration for this meaningless line of code? Well, that is what this blog post will try to answer.
+
+## Why `dj_database_url`?
+
+When you succeed in setting up Django so that it connects with the local Postgres database, your code in `settings.py` probably looks something like this:
+
+```
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'database',
+        'USER': 'user',
+        'PASSWORD': 'password',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    }
+}
+```
+
+As a recap, this just tells Django the host and port to connect to Postgres, the database it should look for, and what user it should log in as when accessing it.
+
+This code seems awfully [hardcoded](https://stackoverflow.com/questions/1895789/what-does-hard-coded-mean), though, and Django is supposed to be a framework that avoids hardcoding. And this is precisely the problem: what happens if you need to run the code somewhere _besides_ your local machine? You would have to change the configuration manually. This can get very ugly, for example, if you're working with a group who all have different copies of the code.
+
+What is the solution? Let's take the configuration _out of the project and into the system_. This way, it'll be whatever it needs to be for that system. Where would it go then? Well, that's what environment variables are for!
+
+## What are environment variables?
+
+Environment variables are just **values that are defined in a computer's environment**. For instance, on my computer, the environment variable `LANG` is defined as `en_US.UTF-8`. Being _defined in the computer's environment_ just means that they are accessible from anywhere within the computer. For example, I could get the value of `LANG` from a Python script by calling
+
+```
+>>> import os
+>>> os.getenv('LANG')
+'en_US.UTF-8'
+```
+
+Whether you've heard of environment variables or not, you have almost definitely experienced at least one of their multitudinous uses. The environment variable that is probably most well-known is `PATH`. Whenever you run anything from the command line, such as `python`, the computer looks through all of the directories listed in `PATH` for an executable file matching the name `python`. Thus, if people install new things in nonstandard locations, all they have to do to let the command line know is edit the `PATH` environment variable.
+
+This is very useful - imagine if we had no power to change where the command line looked for executable files! Or if we did, imagine if we had to change this specification separately for _every single app_ that we download! No one likes to hardcode - unless you're doing USACO and you're down to your last half hour - so environment variables are great news.
+
+See [here](https://superuser.com/questions/284342/what-are-path-and-other-environment-variables-and-how-can-i-set-or-use-them) for more information regarding environment variables and how to set them.
+
+## The `DATABASE_URL` environment variable
+
+Now, we know better than to hardcode our database configuration: we can store it in an environment variable. Django doesn't know what variable this is or how to read it, though, which is where the `dj_database_url` tool comes in. By importing `dj_database_url` and replacing the database configuration in `settings.py` with
+
+```
+DATABASES = {
+    'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
+}
+```
+
+we can put the configuration in the `DATABASE_URL` environment variable, as follows:
+
+```
+DATABASE_URL = postgres://user:password@localhost:5432/database
+```
+
+The way you do this depends on your operating system. See [here](https://superuser.com/questions/284342/what-are-path-and-other-environment-variables-and-how-can-i-set-or-use-them) (same link as above).
+
+`dj_database_url` will take the value of `DATABASE_URL`, parse it into a dict
+
+```
+{
+    'ENGINE': 'django.db.backends.postgres',
+    'NAME': 'database',
+    'USER': 'user',
+    'PASSWORD': 'password',
+    'HOST': 'localhost',
+    'PORT': '5432',
+}
+```
+
+and stuff it into the `DATABASES['default']` variable, just like what we had before.
+
+The two parameters in the statement of `dj_database_url.config` are
+* `conn_max_age`: the lifetime of the database connection. This is to prevent connections from immediately closing after a request is made, which improves efficiency if the app often sends many consecutive requests.
+* `ssl_require`: whether [SSL](https://www.digicert.com/ssl/) should be required or not. SSL certificates ensure that connections are secure, so your safest bet is to require them. It does turn out, though, that `localhost` doesn't support SSL, so you'll have to set `ssl_require=False` as long as you are planning to run it locally. I know hardcoding is bad, but it seems that this issue hasn't yet been resolved: see [here](https://github.com/heroku/django-heroku/issues/10) if you want to check whether a solution has come up yet.
+
+Now, when you transfer the project to a different environment, it will run just fine (given that you configured `DATABASE_URL` properly)! For instance, getting Django Postgres working on Heroku is immediate, since Heroku auto-generates the value for `DATABASE_URL`.
+
+```
+DATABASE_URL = postgres://atiezzmwujaoas:81s113t3pilgwoteedrkiz2aa7mg6v2xckpe5deh43blz3yfjv9h0m3xz9k9uvtg...
+```
+
+Hardcoding this would _not_ have been enjoyable. (This is just a randomly generated example, but you get the idea.)
+
+Well, that's that for one of the many mysteries of Django. It's only one of many, but one is one nonetheless.
+
+<hr>
+
+<span style="display: block; font-size: 10px; line-height: 12px;">
+
+Other sources (not including ones already linked)
+https://stackoverflow.com/questions/16924471/difference-between-os-getenv-and-os-environ-get
+https://www.digicert.com/ssl/
+https://answers.squarespace.com/questions/107013/how-to-change-font-style-in-markdown-editing.html
+https://stackoverflow.com/questions/18151124/css-reducing-line-spacing-of-text
+https://stackoverflow.com/questions/44610355/how-to-create-horizontal-line-in-markdown-using-hexo-framework
+
+Image sources
+https://www.djangoproject.com/m/img/logos/django-logo-positive.png
+</span>

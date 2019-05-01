@@ -1,0 +1,124 @@
+---
+layout: post
+title:  "Information About Forming Informative Forms: An Introduction to Forms in Django"
+date:   2019-05-01 10:41:0 -0400
+author: Jaswin Hargun
+# categories: jekyll update
+---
+# Information About Forming Informative Forms:
+
+## An Introduction to Forms in Django
+
+######
+
+Django's forms are a great way to get information from a user. It is possible to accomplish the same thing without Django, but Django's framework greatly simplifies the process. In this tutorial, I'll show you how to create a simple form.
+
+I'll assume you know how to make a basic Django application and use HTML templates. If you do not know how to do so, Django's documentation offers a great tutorial. I would recommend [tutorial 1](https://docs.djangoproject.com/en/2.2/intro/tutorial01/) and the template section of [tutorial 3](https://docs.djangoproject.com/en/2.2/intro/tutorial03/).
+
+1. [forms.py](#forms.py)
+2. [HTML Files](#HTML-Files)
+3. [views.py](#views.py)
+4. [Sources](#Sources)
+
+### forms.py
+
+Forms in django require a forms.py file in the app's folder (note: **NOT** the project folder). After creating this file, add:
+~~~~python
+from django import forms
+~~~~
+
+This imports the forms class from django. In this file, each unique form is made by creating a new class that extends forms.Form with any fields you want in the form. An example of this is:
+~~~~python
+class LoginForm(forms.Form):
+    username = forms.CharField(label='Username', max_length=100)
+~~~~
+
+The first line creates a new type of form called LoginForm. The second line specifies a single field. It is a CharField, meaning it takes text as an input. There are many different types of fields, including URLField, ImageField, EmailField, and many others (find a full list [here](https://www.webforefront.com/django/formfieldtypesandvalidation.html)). These fields have certain parameters, two of which are shown here.
+
+#### Field Parameters
+
+Fields come with a lot of possible parameters. This is a list of some important ones. There are a lot, so if you want a more comprehensive list, you can find one [here](https://docs.djangoproject.com/en/2.2/ref/forms/fields/):
+
+**required** - Specifies if user input is required. The default is True. Setting this changes what the clean() function (which normalizes/cleans the data entered) does with an empty field. If this is true and nothing is entered, clean() will return a ValidationError. If it is false, clean() will accept empty fields. You will see when clean() is used later.
+
+**label** - What the user sees. This is the display for the example where *label='Color'*:
+<img src="https://i.ibb.co/LZdCRVQ/Blog1.png" alt="Label_Example" border="0" width=200px>
+
+**initial** - Any initial values to add when initially rendering a form. For example, this is the display if *intial='Blue'*
+is added to the previous example:
+<img src="https://i.ibb.co/H2K6z7G/Blog1-Initial.png" alt="Initial_Example" border="0" width=200px>
+
+Some fields come with their own unique parameters. For example, CharField has *min_length* and *max_length*, which specify the minimum and maximum length respectively, *strip*, which will remove whitespace at the start and beginning if true, and *empty_value*, which is the value to use if the field is left empty (an empty string by default).
+
+### HTML Files
+
+The simplest example of an html file for your form is:
+~~~~html
+<form method="post">
+  {% raw %}{% csrf_token %}
+  {{ form }}{% endraw %}
+  <input type="Submit" value="Apply Changes">
+</form>
+~~~~
+
+Let's go through this line by line:
+
+**method** - This defines the HTTP method used. The two options are POST and GET. If POST is used, the browser encodes the data and sends it to the server. GET, on the other hand, makes a string with all of the values and puts it into a url. Therefore, POST is better for secure information like logins since the url can be read by anyone. POST is also better for when something like a database is being changed or updated. It also does not have a size limitation. GET is better if you want the user to be able to bookmark or share the resulting webpage since the form information is in the url itself.
+
+**{% raw %}{% csrf_token %}{% endraw %}** - This gets the CSRF token, which is used for protection against Cross Site Request Forgeries, a type of cyberattack. It is required for forms that are submitted using POST with CSRF protection enabled.
+
+**{% raw %}{{ form }}{% endraw %}** - This gets the form from views. I'll show you how to pass a form to the HTML template in the next part.
+
+**input** - This line defines a way to input the data. For a full list of the attributes, look [here](https://www.lifewire.com/input-type-button-3468604). The type='Submit' makes a submit button which sends the form information to views.py. The value attribute makes text on the button. In this example, the button looks like this:
+<img src="https://i.ibb.co/S58s0Tr/Blog-Example2.png" alt="Button-Example" border="0" width=100px>
+
+### views.py
+
+In views.py, make sure to import your form. Our form was called LoginForm, so it would look like this:
+~~~~python
+from .forms import LoginForm
+~~~~
+
+This is an simple example of a method in views.py using LoginForm:
+~~~~python
+def login(request):
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            return HttpResponse("Welcome, %s" % username)
+    else:
+        form = LoginForm()
+    return render(request, 'example_project/Form.html', {'form': form})
+~~~~
+
+The first line checks if the request method is POST (with the other most likely being GET). If it is post, that means the user can fill out the form.
+
+If the user used a POST request, a LoginForm is created and the data inputted by the user (request.POST) is passed to it. Django checks if the form is valid (if you remember clean() from the forms.py section, this will be false if clean() returns an error). If it is, is_valid() places the form's information in form.cleaned_data. The form information is used to set a variable username, which is printed in a welcome message. This is a very simple use for form's data, and you can use it for many other things, including redirects to new urls or rendering user specific HTML pages.
+
+If the user did not use a POST request, a new form is created and rendered using the Form.html file we created earlier.
+
+######
+
+Now you know how to make a simple form! I hope this was a helpful introduction. If you want further information, I've included links in the sources section that can help you learn more.
+
+### Sources
+
+The sources I used for this blog post are great for further reading if you want to learn more.
+
+These are sources I did not previously link.
+
+1. https://docs.djangoproject.com/en/2.2/topics/forms/
+2. https://www.w3schools.com/tags/tag_input.asp
+3. https://stackoverflow.com/questions/22524314/django-request-post-as-an-argument-of-a-form
+4. https://teamtreehouse.com/community/the-purpose-of-cleaneddata-and-response-after-form-submit
+
+And these are the ones I already linked. I used everything I linked throughout this article. I just put them here so they're all in one place.
+
+1. https://docs.djangoproject.com/en/2.2/intro/tutorial01/
+2. https://docs.djangoproject.com/en/2.2/intro/tutorial03/
+3. https://www.webforefront.com/django/formfieldtypesandvalidation.html
+4. https://docs.djangoproject.com/en/2.2/ref/forms/fields/
+5. https://www.lifewire.com/input-type-button-3468604
+
+I also used ImgBB to host my example pictures online. Their url is https://imgbb.com/

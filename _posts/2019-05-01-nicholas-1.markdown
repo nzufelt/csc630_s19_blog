@@ -1,0 +1,207 @@
+---
+layout: post
+title:  "Knex: A guide to the basics for using knex with nodejs and express"
+date:   2019-05-01 10:41:0 -0400
+author: Nicholas Masri
+# categories: jekyll update
+---
+# Knex: A guide to the basics for using knex with nodejs and express
+
+## Why even use Knex in the first place?
+
+_You might be asking why use knex in the first place. Why should you have to learn how to use knex in the first place if you can get by with using sql?_
+
+Well, knex is a lot easier to read and write then sql is.
+
+For example, lets look at these two blocks of code:
+
+
+Here it is written using SQL:
+``` javascript
+//Delete address
+app.delete("/address/delete", function(req, res){
+  client.query(`DELETE FROM Addresses WHERE AddressID=${req.body.addressID}`, function(err, result){
+    console.log("Deleted Address");
+    res.sendStatus(200);
+  });
+});
+```
+
+Here is the same code written using knex:
+``` javascript
+//Delete address
+app.delete("/address/delete", function(req, res) {
+  knex("address_tb").where("address_id", "=", req.body.addressID).del().then(function() {
+    res.status(200).send("Succesfully Deleted Entry in Addresses Table");
+  })
+});
+```
+
+As you can see, the same code written in knex is a lot **easier to read** and also just looks **a lot nicer**. It is also a lot easier to pass in variables from the javascript code.
+
+Additionally, although I won't be addressing this in this article knex and other query builders are used because it is a lot more **secure** than writing plain sql. (Read more: https://stackoverflow.com/questions/49665023/does-knex-js-prevent-sql-injection)
+
+## How to use Knex
+Know that we know why we want to use knex, lets go over how you can use it.
+
+If you want, you can read the documentation here for reference: https://knexjs.org/
+
+### Installation
+
+Installation of knex is very simple.
+
+Assuming you have node.js installed from this website: https://nodejs.org/en/, just run:
+
+`npm install knex --save`
+
+That command will install knex and the `--save` will save it to the package.json file.
+
+Next install a library for the appropriate database you are using. I am using postgres as I have found it quite simple, but if you are using something else just consult the knex documentation above.
+
+To install the postgres package for nodejs I just run:
+
+`npm install pg --save`
+
+
+
+### Linking Knex and your database
+Linking your database with knex is pretty simple. In the beginning of your code just write the following code where you fill in the fields with the corresponding data.
+``` javascript
+var knex = require('knex')({
+  client: 'pg',
+  connection: {
+    host : '127.0.0.1',
+    user : 'your_database_user',
+    password : 'your_database_password',
+    database : 'myapp_test'
+  }
+});
+```
+#### Helpful note for using knex with github
+
+If you are using knex in a project on github with multiple people, it would be annoying to constantly change this config in your file everytime you do a pull request. To fix this we suggest the following:
+
+1) Create a file called config.js with with the following code including your personal database name, username and password.
+``` javascript
+exports.database =  {
+  host : '127.0.0.1',
+  user : 'your_database_user',
+  password : 'your_database_password',
+  database : 'myapp_test'
+}
+```
+2) Add config.js to your gitignore file. (Node_modules should also be included in .gitignore)
+
+3) In your main server file, include the following code:
+``` javascript
+const config = require('./config.js');
+
+//Setting up knex
+var knex = require("knex")({
+  client: "pg",
+  connection: config.database
+});
+```
+
+That way anyone who wants to contribute to the code just has to clone the code and create a config.js file with their own personal database info.
+
+## Query Building
+
+
+### Creating a table in your database
+Knex is a lot like writing SQL, so make sure you have the basics of SQL down before using knex. Once you have that down, writing knex should be quite simple.
+
+First lets go over how to make a table. The following code will create a table if the database doesn't have it and define the columns of the table for future use:
+
+``` javascript
+knex.schema.hasTable("users_tb").then(function(exists) {
+  if (!exists) {
+    return knex.schema.createTable("users_tb", function(table) {
+      console.log("created users table");
+      table.increments("user_id"); // Creates "id" column on table that auto-increments
+      table.string("user_name");
+      table.string("pass_word");
+    });
+  }
+});
+```
+
+
+**Equivalent SQL Query:**
+``` sql
+create table `users_tb` (`user_id` int unsigned not null auto_increment primary key, `user_name` varchar(255), `pass_word` varchar(255)
+```
+
+_What is all this code?_ Lets go over it step by step.
+
+**knex**: this is the variable we defined up above by setting up our client:
+
+**knex.schema**: this is a getter function which returns an object containing the query.
+
+**hasTable("users_tb")**: this function is pretty clear as to what it does, but it will check if the database has a table named users_tb and returns a boolean value
+
+**.then(function(exists))**: this is a promise statement that essentially waits for the answer from knex. Without this, the code would run before knex has checked whether or not it has created the table. Exists is the boolean passed on from the createTable() function.
+
+**if(!exists)**: run the following code if the database does not have the table
+
+**knex.schema.createTable("users_tb", function(table){...})**": knex creates a table where the first param in the createTable function is the name of the table, and the second is callback function that populates the table with different columns.
+
+**table.increments("user_id")**: this creates an incremental value in the table, which is useful for id's
+
+**table.string**: string is knex is the equivalent of varchar(255)
+
+The other two are quite intuitive so I won't waste any more time explaining them.
+
+
+
+### Populating Table
+``` javascript
+knex("users_tb").insert({
+  user_name: req.body['userName'],
+  pass_word: bcrypt.hashSync(req.body['passWord'])
+}).then(function() {
+  res.status(200).send("Succesfully Created Entry in Users Table");
+})
+```
+
+**Equivalent SQL Query:**
+``` sql
+INSERT INTO [users_tb] (user_name, pass_word) VALUES (req.body['userName'], req.body['passWord']
+```
+
+Once again, lets go over it step by step.
+
+**knex("users_tb")**: To specify the table name, just feed it the name at the start of the query builder.
+
+**.insert(data)**: This command can take one insert statement or an array full of multiple insert statements.
+
+**.then(function()**: Think we could have gone without this? of course not, it's knex so we need a promise statement for this to work properly.
+
+
+### Returning data from the table
+
+For the last example, I am going to show you how you could authenticate users using your database by checking if the username password combo exists in the database.
+
+``` javascript
+knex.select("pass_word").where({
+  "user_name": req.query['userName']
+}).from("users_tb").then(function(password) {
+  if (password.length && bcrypt.compareSync(req.query["passWord"], password[0].pass_word) ) {
+    res.status(200).send("User authenticated");
+  } else {
+    res.status(400).send("No user with that username password combination");
+  }
+})
+```
+
+**Equivalent SQL Query:**
+``` sql
+ select `pass_word` from `users_tb` where "user_name" = ${req.query['userName']}
+```
+
+Don't worry about this example and the specifics as much in this one. This article just scrapes the surface of what you can do with Knex, and it should have mostly served as an introduction. Of course, please refer to the documentation for more specifics and for all of the commands in Knex, as there are many more (https://knexjs.org)
+
+
+**See you next time**
+
+![See you next time](https://thumbs.gfycat.com/PaltryAdventurousBarasinga-size_restricted.gif)

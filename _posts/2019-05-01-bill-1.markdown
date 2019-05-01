@@ -1,0 +1,57 @@
+---
+layout: post
+title:  "The gem of Bundler: Gemfiles"
+date:   2019-05-01 10:41:0 -0400
+author: Bill Qin
+# categories: jekyll update
+---
+# The gem of Bundler: Gemfiles
+
+In the development of Ruby projects (or projects in general), one of the hardest and most frustrating things to manage are your dependencies.
+Fortunately, for Ruby developers, the existence of the **Bundler gem** allows for easy management of your other gems.
+
+..* *(Note: Gems are Ruby's libraries and modules.)*
+
+With a few simple commands, a Ruby project can easily begin implementing Bundler: `gem install bundler`.
+
+Once you have Bundler, you can add it to your projects very easily: `bundle install`.
+Note that the creation of Rails projects at this point will automatically run `bundle install`.
+
+Upon running `bundle install`, a new file will emerge in your root directory: `Gemfile`.
+
+---
+
+
+## Updates are complicated, keep track using the Gemfile!
+
+When developing an average Ruby project, you need a lot of gems. **A lot**. Just creating a Ruby on Rails project automatically implements roughly 50 gems.
+Developers of gems are continually improving their functionality, which is great for Ruby developers to get additional power from their gems, but is not so great when incompatibility becomes an issue between two different gems or when bugs open up from new versions.
+
+Fortunately, during the creation of your project, your Gemfile will keep your dependencies and their versions in check.
+This means that if your application works today, it will work years in the future as long as your application's host has those gems available.
+
+But it's not just specific releases and versions of gems that can be stored in Gemfiles. You can specify to the Gemfiles to take only releases in version 2, nothing past version 3.8, only 1.0.0, or any release whatsoever with just a few lines.
+
+Here is an excerpt of a sample Gemfile:
+
+```
+source 'https://rubygems.org'
+git_source(:github) { |repo| "https://github.com/#{repo}.git" }
+
+ruby '2.5.3'
+
+gem 'rails', '= 5.2.3'
+gem 'pg'
+gem 'puma', '~> 3.11'
+gem 'sass-rails', '~> 5.0'
+gem 'uglifier', '>= 1.3.0'
+gem 'duktape'
+gem 'coffee-rails', '~> 4.2'
+gem 'turbolinks', '~> 5'
+gem 'jbuilder', '~> 2.5'
+.
+.
+.
+```
+
+Note how Rails has been specified to only take version 5.2.3, whichever PostgreSQL (`pg`) gem, any Uglifier gem of at least version 1.3, and anywhere from version 5 to 6 (6 exclusive) for TurboLinks.

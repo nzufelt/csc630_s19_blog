@@ -1,0 +1,153 @@
+---
+layout: post
+title:  "Developing Webpages with Accessibility and Inclusivity for Everyone in Mind"
+date:   2019-05-01 10:41:0 -0400
+author: Kabir Nagral
+# categories: jekyll update
+---
+# Developing Webpages with Accessibility and Inclusivity for Everyone in Mind
+
+The internet is a primary source of information, entertainment, and communication. However, for people with disabilities, there are barriers in place that make many of these things inaccessible, as many websites don’t consider their needs. Much of the internet is not yet treated as a public space and does not ensure access to everyone regardless of ability. This article is a guide to writing accessible front-end web apps and making webpages truly inclusive and accessible to all.
+
+This guide focuses specifically on writing accessible HTML, which is probably the most important part of front-end accessibility. That being said, there are other parts of front-end web development (CSS, JavaScript, etc.) that this article ignores. If you want more information on web accessibility, consult [additional resources](#Additional-Resources).
+
+## Table of Contents
+
+[Why Does it Matter Anyway?](#Why-Does-It-Matter-Anyway?)
+
+[How Does it Work on the User's End?](#How-Does-it-Work-on-the-User's-End?)
+
+[Language](#Language)
+
+- [Declaring a Language](#Declaring-a-Language)
+- [Using Clear Language](#Using-Clear-Language)
+
+[It's Just a Matter of Semantics ... Except it Actually Matters](#It's-Just-a-Matter-of-Semantics-...-Except-it-Actually-Matters)
+
+[Page and Content Structure](#Page-and-Content-Structure)
+
+[Alternative Text](#Alternative-Text)
+
+[Additional Resources](#Additional-Resources)
+
+- [ARIA](ARIA)
+
+[Development Philosophy](#Development-Philosophy)
+
+[Sources for this Article](#Sources-for-this-Article)
+
+## Why Does it Matter Anyway?
+- It is important that the internet is accessible to everyone in order to provide **equal access** and **equal opportunity** to people with disabilities.
+- People with disabilities comprise roughly _10 percent_ of the world's population. An accessible webapge ensures that you are **not losing out on 1 in 10 people**.
+- Another important consideration for organizations is that web accessibility is **required by laws and policies** in some cases.
+- And if none of these reasons convince you to make your webpage accessible, consider this: what you do for accessibility overlaps with other **web development best practices** such as _mobile web design_, _usability_, and _search engine optimization_.
+
+## How Does it Work on the User's End?
+People with disabilities use a variety of assistive technologies to use electronic devices and browse the web. In particular, many visually-impaired or blind users access web pages with the help of **screen readers**. Screen readers _parse through the HTML_ of your web page and _read the contents out loud_, responding to commands to _navigate around the page_, and _take actions_ such as clicking on a link, typing in an input field, or submitting a form.
+
+## Language
+The language we use affects everything in life, including accessibility.
+
+### Declaring a Language
+Declaring a language is important for screen readers and search engines, and is declared with the `<lang>` attribute. Defining the correct language in an HTML page helps assistive technology to choose the correct voice profile or character set. The following declares that the web page is in English:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    ...
+  </head>
+  <body>
+    ...
+  </body>
+</html>
+```
+
+If you want to set your webpage to a different language, browse through [the list of HTML language ISO codes](https://www.w3schools.com/tags/ref_language_codes.asp) and place the two-character code in place of "en". For example, Faroese's code is _fo_, so to set a page's language to Faroese, you would use `<html lang="fo">`.
+
+### Using Clear Language
+This is just good practice for web development, but is especially important for web accessibility. Use **simple language**, try to **avoid characters that cannot be read clearly by a screen reader**, and **don't use slang or unnecessary jargon**. This not only benefits people with cognitive or other disabilities; it benefits readers for whom the text is not written in their first language, children and everyone. Some key principles include:
+- **Avoid dashes**. For example, instead of writing _3-5_, write _3 to 5_.
+- **Avoid abbreviations**. For example, instead of writing _Feb_, write _February_.
+- **Expand acronyms**, at least once or twice. For example, instead of writing _GGMU_ in the first instance, write _Glory Glory Man United_.
+
+## It's Just a Matter of Semantics ... Except it Actually Matters
+Semantic HTML means using correct HTML elements for their correct purpose as much as possible. Semantic elements are elements with a meaning, and when screen readers interact with HTML, the meaning matters because Semantic HTML gives context to screen readers.
+
+If you need 'X' element, use its corresponding tag. You should **always favor native HTML elements**, if there is one, over faking your own. For example, if you need to use a button, use the `<button>` element as opposed to using a `<div>`.
+
+Non-Semantic HTML elements tell us nothing about their content. Examples include `<div>` and `<span>`
+Semantic HTML elements clearly defines their contexts. Examples include `<form>`, `<header>`, `<footer>`, `<button>` and `<article>`.
+
+## Page and Content Structure
+Structuring your markup correctly with headings is important. By creating a sound outline using headings `<h1>` to `<h6>` you help users to better understand the structure of your page and relationships between individual sections. On top of that, it will help users with assistive technology navigate your page. For example, screen readers provide different ways of moving from one piece of content to anothera and users can jump from heading to heading with shortcuts.
+
+When you nest headings skipping levels should be avoided. Don’t use multiple nested `<h1>` elements to create the outline.
+
+This is an example of good structure:
+
+```html
+<body>
+    <h1>The main heading</h1>
+    <h2>Section Heading</h2>
+        <h3>Subheading</h3>
+    <h2>Another Section Heading</h2>
+</body>
+```
+
+This is an example of bad structure:
+
+```html
+<body>
+    <h1>The main heading</h1>
+      <h1>Section Heading</h1>
+    <h4>You Get the Picture</h4>
+        <h2>This is Terrible</h2>
+    <h3>I don't know why people would structure their page like this</h3>
+      <h6>But for some reason they do</h6>
+</body>
+```
+
+## Alternative Text
+**The `alt` attribute in the `img` tag provides alternative text for images.** The value of the `alt` attribute describes the image to a screen reader. You don't need to start the description with "Image/Picture/Photo of". The screen reader does this already.
+
+```html
+<body>
+  <img src="https://upload.wikimedia.org/wikipedia/commons/0/0d/Samuel_Phillips_Hall.jpg"
+  alt="Samuel Phillips Hall"/>
+</body>
+```
+
+In the example above, when a screen reader encounters the `img` tag, it will speak aloud the description of the image ("Samuel Phillips Hall"), instead of simply indicating to the user that an image exists on the page.
+
+## Additional Resources
+There are several topics that I was unable to cover in this article but are nevertheless important for the accessibility of HTML.
+
+- [Accessibility laws and policies from around the world](https://www.w3.org/WAI/policies/)
+- [CSS and Java​Script accessibility best practices](https://developer.mozilla.org/en-US/docs/Learn/Accessibility/CSS_and_JavaScript)
+- [Accessible multimedia](https://developer.mozilla.org/en-US/docs/Learn/Accessibility/Multimedia)
+- [Mobile accessibility](https://developer.mozilla.org/en-US/docs/Learn/Accessibility/Mobile)
+- [What is accessibility?](https://developer.mozilla.org/en-US/docs/Learn/Accessibility/What_is_accessibility)
+- [Writing JavaScript with accessibility in mind](https://medium.com/@matuzo/writing-javascript-with-accessibility-in-mind-a1f6a5f467b9)
+- [Writing CSS with Accessibility in Mind](https://medium.com/@matuzo/writing-css-with-accessibility-in-mind-8514a0007939)
+
+### ARIA
+Given the limits of space in this article, I wasn't able to get into a key part of developing accessible web applications in HTML: ARIA. ARIA, which stands for _Accessible Rich Internet Applications_, is a set of attributes that define ways to make web content and web applications (especially those developed with JavaScript) more accessible to people with disabilities.
+
+I haven't really covered information related to ARIA in this article, but you can find resources about ARIA [in the MDN Web Docs](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA) and [on the Web Accessibility Initiative's Website](https://www.w3.org/WAI/standards-guidelines/aria/).
+
+## Development Philosophy
+
+_People don’t have disabilities; people are disabled by a societies and communities that are apathetic to their needs_. Unfortunately, this is also a reality in the software world. When we start separating people with disabilities from the broader population, a clear distinction is drawn between able-bodied people and the disabled on the basis of who does and does not need accessible software. This narrative encourages developers to choose whether they want to, can afford to, or have the extra time to make their software accessible to all. Software accessibility often becomes optional or an add-on feature because of this distinction. In reality, **accessibility  should be the fundamental building block upon which all software is built**, with universal usability in mind. Accessibility isn’t just a medical term that only applies to a certain percentage of people. Accessibility is something that concerns all of us. **What we create is useless if it isn’t accessible**.
+
+Here's a decent way to look at web accessibility:
+> Web accessibility means that people with disabilities can use the Web.
+
+Here's a much better way to look at web accessibility:
+> Web accessibility means that everyone can use the Web.
+
+## Sources for this Article
+- [HTML Accessibility](https://www.w3schools.com/html/html_accessibility.asp)
+- [Accessibility and HTML](https://www.codecademy.com/articles/accessibility)
+- [Writing HTML with accessibility in mind](https://medium.com/alistapart/writing-html-with-accessibility-in-mind-a62026493412)
+- [HTML: A good basis for accessibility](https://developer.mozilla.org/en-US/docs/Learn/Accessibility/HTML)

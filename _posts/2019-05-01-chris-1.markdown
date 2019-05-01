@@ -1,0 +1,132 @@
+---
+layout: post
+title:  "Keeping Your Users Happy: Activity Indicators"
+date:   2019-05-01 10:41:0 -0400
+author: Chris Ward
+# categories: jekyll update
+---
+# Keeping Your Users Happy: Activity Indicators
+
+Good apps are more than attractive and functional. They need to be user-oriented. Feedback is essential to afford users easy navigation throughout your application, especially during long processes when the display would otherwise be unchanging. In this blog post, you will learn to implement labelled activity indicators in **Swift 5 on Xcode 10**.
+
+### Create a Project
+
+1) Open Xcode. Press *Command-Shift-N* or navigate to *File > New > Project* in Xcode's menu bar.
+2) Select "Single View App."
+3) Name your project in the "Product Name" field.
+4) Select "Swift" as the new application's language. Leave the rest of the options unchanged.
+
+### Define a Labelled Activity Monitor function
+
+The first step of creating an activity monitor is defining your variables. Three variables must be defined: the activity monitor, a label, and a view to hold both of these items. Swift contains the class UIActivityInidcatorView to assist developers in alerting users of the state of tasks. See the [full documentation here](https://developer.apple.com/documentation/uikit/uiactivityindicatorview).
+
+1) Navigate to your ViewController.swift file.
+2) Under the class declaration, add these declarations:
+```swift
+var activityIndicator = UIActivityIndicatorView()
+var strLabel = UILabel()
+let loadingAnimationView = UIView()
+```
+3) Next, define an activity indicator function that takes in a String (which will be the label's text):
+```swift
+func activityIndicator(title: String) {}
+```
+4) Within the function, let's prepare the label. Instantiate the strLabel variable using a Core Graphics rectangle frame (defines the location and dimensions of a rectangle).
+**Parameter explanations:** x = 50 to give ample room for the loading animation to the left of the text. The width is 200 to provide ample room for descriptive labels. The height is 46 for the activity indicator. For basic activity monitor labels, the system's standard font is suitable. The activity monitors background will be dark grey, so the label's text should be white.
+```swift
+strLabel = UILabel(frame: CGRect(x: 50, y: 0, width: 200, height: 46))
+strLabel.text = title // Set the label's text to the title paramater
+strLabel.font = .systemFont(ofSize: 14, weight: UIFont.Weight.medium)
+strLabel.textColor = UIColor(white: 0.9, alpha: 0.7)
+```
+5) Below these lines code, we will instantiate and format the activity indicator.
+```swift
+activityIndicator = UIActivityIndicatorView(style: .white) // White like the text
+activityIndicator.frame = CGRect(x: 0, y: 0, width: 46, height: 46) // Left justified in view
+activityIndicator.startAnimating()
+```
+6) We're ready to prepare the loadingAnimationView which will hold both the label and activity indicator.
+```swift
+// Center the view on the screen
+loadingAnimationView.frame = CGRect(x: view.frame.midX - strLabel.frame.width/2, y: view.frame.midY - strLabel.frame.height/2 , width: 200, height: 46)
+
+// Round the view's corners and give it a transparent dark grey background
+loadingAnimationView.layer.cornerRadius = 15
+loadingAnimationView.backgroundColor = UIColor(red:0.27, green:0.27, blue:0.27, alpha:0.7)
+```
+7) It's time to add the label and activity indicator to this view.
+```swift
+loadingAnimationView.addSubview(activityIndicator)
+loadingAnimationView.addSubview(strLabel)
+```
+8) Then add these to the overall view.
+```swift
+view.addSubview(loadingAnimationView)
+```
+9) Since you're adding these to your view, you need to ensure that previous function calls do not interfere with a current one. Add the following lines at the top of your function.
+```swift
+strLabel.removeFromSuperview()
+activityIndicator.removeFromSuperview()
+loadingAnimationView.removeFromSuperview()
+```
+10) Your full function should now be defined. Confirm that the code matches this uncommented version.
+```swift
+func activityIndicator(title: String) {
+
+    strLabel.removeFromSuperview()
+    activityIndicator.removeFromSuperview()
+    loadingAnimationView.removeFromSuperview()
+
+    strLabel = UILabel(frame: CGRect(x: 50, y: 0, width: 200, height: 46))
+    strLabel.text = title
+    strLabel.font = .systemFont(ofSize: 14, weight: UIFont.Weight.medium)
+    strLabel.textColor = UIColor(white: 0.9, alpha: 0.7)
+
+    loadingAnimationView.frame = CGRect(x: view.frame.midX - strLabel.frame.width/2, y: view.frame.midY - strLabel.frame.height/2 , width: 200, height: 46)
+    loadingAnimationView.layer.cornerRadius = 15
+    loadingAnimationView.backgroundColor = UIColor(red:0.27, green:0.27, blue:0.27, alpha:0.7)
+
+    activityIndicator = UIActivityIndicatorView(style: .white)
+    activityIndicator.frame = CGRect(x: 0, y: 0, width: 46, height: 46)
+    activityIndicator.startAnimating()
+
+    loadingAnimationView.addSubview(activityIndicator)
+    loadingAnimationView.addSubview(strLabel)
+    view.addSubview(loadingAnimationView)
+}
+```
+
+### Display the Labelled Activity Monitor
+
+Your activity monitor will display whenever you call your activityIndicator function. You will often want to do this when some action is performed. In this case, we will create a button that displays the activity monitor and text when pressed.
+
+1) Navigate to Main.storyboard
+2) Add a button from the objects library to the bottom center of the scene.
+3) Double click the button and change its text to "Display loading animation."
+4) Open the assistant editor, splitting the Main.storyboard and ViewController.swift screens.
+5) Control drag from the button to below the ViewController class declaration.
+6) For "Connection" choose "Action"
+For "name"" write "displayActivityIndicator"
+For "Type" choose "UIButton"
+7) Click connect.
+8) Within this function, call the activityIndicator function with an appropriate label.
+```swift
+activityIndicator(title: "Custom loading text!")
+```
+Run your project and press the button to confirm the labelled monitor's functionality. Of course, the activity indicator never stops. Within your own project, when the task requiring the activity monitor completes, you should remove the loadingAnimationView using the following
+```swift
+loadingAnimationView.removeFromSuperview()
+```
+
+### Learning More
+
+This was only a basic introduction to activity monitors. To create your own animations or having changing text, wait for part 2 of this post... or look into the following resources:
+[Read how to create a custom loading animation](https://www.raywenderlich.com/1746-how-to-create-a-complex-loading-animation-in-swift)
+[Watch how to create a custom loading animation](https://www.youtube.com/watch?v=Vk-B6UPLOjA)
+[See Apple's documentation on the more general progress indicators](https://developer.apple.com/design/human-interface-guidelines/ios/controls/progress-indicators/)
+
+### Resources Used:
+
+[Basics of Activity Monitors](https://www.ioscreator.com/tutorials/activity-indicator-ios-tutorial-ios12)
+[Labelled Activity Monitors](https://stackoverflow.com/questions/27960556/loading-an-overlay-when-running-long-tasks-in-ios)
+[Decoding a view error](http://brainwashinc.com/2017/07/21/loading-activity-indicator-ios-swift/)

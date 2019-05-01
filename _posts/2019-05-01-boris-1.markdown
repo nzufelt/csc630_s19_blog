@@ -1,0 +1,81 @@
+---
+layout: post
+title:  "Elasticssearch"
+date:   2019-05-01 10:41:0 -0400
+author: Boris Shmuylovich
+# categories: jekyll update
+---
+# First Blog Post
+
+Searching your webpage is an important part of any sophisticated website but can end up being fairly complicated as the segmentation of the website may result in a complex search. Often times websites focused on selling products, such as AirBnB, Spotify, Amazon.., rely fundamentally on a search engine. For our use however, we will not be forced to develop from scratch a backend search engine, in fact there is a very popular one for Ruby Rails called Elasticssearch which is open source.
+
+
+I will continue assuming that whomever is reading has wget and basic knowledge of terminal operations as well as ruby, rails and postgresql.
+```
+$ wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.2.3.zip
+$ unzip elasticsearch-6.2.3.zip
+```
+Now we are done you have the search engine. Just kidding I will sample a small guide on how to apply the search engine. First we will need to create a new app for us to demonstrate in:
+```
+$ rails new movies-search --api
+$ cd movies-search
+```
+The specific difference here as compared to normal is using -api when creating our app this will get rid of like 90% of the middleware which is what we want.
+
+Now we need to add the specific gems we are using. This is done by editing the gem file then bundling it so that it will install the gems we wrote in as listed below
+
+```
+# Gemfile
+...
+# Elasticsearch integration
+gem 'elasticsearch-model'
+gem 'elasticsearch-rails'
+group :development, :test do
+  ...
+  # Test Framework
+  gem 'rspec'
+  gem 'rspec-rails'
+end
+group :test do
+  ...
+  # Clean Database between tests
+  gem 'database_cleaner'
+  # Programmatically start and stop ES for tests
+  gem 'elasticsearch-extensions'
+end
+```
+
+then we run to download and install all gems previously listed
+```
+$ bundle install
+```
+
+This is most of the setup now that you have gotten I will link you to the rest of the setup as briefly started here: https://medium.freecodecamp.org/how-to-add-a-powerful-search-engine-to-your-rails-backend-57bced889032
+
+
+This data used to test drive the environment is not mine.
+
+Given a certain amount of objects each has a certain datatype all of which we can search for. Given the name of our environment we will make movie objects and migrate our database as we have done before:
+
+
+```
+$ rails g model Movie title:string overview:text image_url:string vote_average:float
+$ rails db:migrate
+```
+
+Then we add Elasticsearch to our datapoints to be able to search. We go to movies.rb and in there we add:
+```
+class Movie < ApplicationRecord
+  include Elasticsearch::Model
+end
+```
+This chunk of code will add some the Elasticsearch functionality to our app. As well we can check if our data has proper indexing at this point by running
+```
+bundle exec rspec spec/models/movie_spec.rb
+```
+**If at this point you encounter an error something has gone wrong and your database is not indexed**
+From this point on feel free to explore you can change by what the database is indexed by and as a result the functionality of the search engine within the different components of the model file. I have not gone into implementing this on a front end and am not entirely sure as to how allow limited access to users to some files in the database/model. Given that it is open source there is a lot of free material on Elasticsearch such as this GitHub repository: https://github.com/elastic/elasticsearch-rails as well as this very interesting article on the pluses and minuses of Elasticsearch and wether or not you should consider it as a building block for your app:https://medium.com/swlh/how-should-you-use-elasticsearch-in-ruby-on-rails-app-3d8d6997cc75.
+
+There are many security issues that come in with Elasticsearch so it becomes important to take security precautions such as authenticating users. For our purposes as introductory users we can use xpack stack to this effect to secure Elasticsearch. It will encrpyt your data from end to end but there is nothing to stop it being intercepted. xpack also allows you to see an 'audit trail' to see who has accessed it. xpack also has built in authentication with privileges assigned to each user.
+
+Elasticsearch on their website: https://www.elastic.co/guide/en/x-pack/current/elasticsearch-security.html contains an in depth explanation and download instructions for xpack.

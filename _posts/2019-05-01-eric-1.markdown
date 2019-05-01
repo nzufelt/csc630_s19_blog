@@ -1,0 +1,107 @@
+---
+layout: post
+title:  "404: /Django/How-to/Handle/URL/Request? not found"
+date:   2019-05-01 10:41:0 -0400
+author: Eric Osband
+# categories: jekyll update
+---
+# 404: /Django/How-to/Handle/URL/Request? not found
+*A quick help guide to Django HTTP requests by Eric Osband*
+
+ So you're creating your very first [Django](https://www.djangoproject.com/) project - or perhaps your third - and you forget the most important part! **How on earth does my page handle a URL request?** With so many files and so much built in code, tackling Django projects can seem daunting and make the whole process miserable. But fear not, it *is* as easy as one, two, three. You'll have the next [Facebook](https://www.facebook.com/) in no time.
+
+ *Note: This guide assumes you have created a django project - including an app - already and are fimiliar with the basic file structure.*
+
+### 1. Where does it go?
+
+![Screen Shot 2019-04-18 at 7.28.42 PM.png](https://www.dropbox.com/s/bs5uoeg0xkjbans/Screen%20Shot%202019-04-18%20at%207.28.42%20PM.png?dl=0&raw=1)
+
+The path of each HTTP request is documented in the graphic above. Note that since Django on its own is a back-end framework, it will only actually be able to modify the **URL handling** and **Unpackaging** portions of the process. Yet it is still important to know *how* the information was transmitted to the server, since it will determine how we unpackage it. In this brief guide we assume the request was sent directly as a [GET, POST, PATCH, etc. request](https://spring.io/understanding/REST), not through a [form](https://docs.djangoproject.com/en/2.2`/topics/forms/).
+
+### 2. URL handling - `urls.py`
+
+The first file you must edit is – no surprise – `urls.py`. It can be found under `project_folder/myproject/urls.py`.
+
+![Screen Shot 2019-04-18 at 7.56.42 PM.png](https://www.dropbox.com/s/f03c5qsdsy2rg8c/Screen%20Shot%202019-04-18%20at%207.56.42%20PM.png?dl=0&raw=1)
+
+At the bottom of the file you will find these lines of code.
+```python
+urlpatterns = [
+    path('admin/', admin.site.urls),
+]
+```
+This is array is where add any desired path. The function path - which was imported from the `django.urls` module - takes in the shortened URL path as a `String`, the function that will be called upon navigation to the URL, as well as optional keyword arguments. A variable string can be accepted by writing `.../<type: paramater_name>/...`. You may accept as many parameters as you like, but be mindful that the function you will redirect to must take in each one of those parameters, with the exact same name that you specified here.
+
+```python
+path('users/<str:user_id>', userInfo)
+```
+For example, in the line above, the function `userInfo` would have to accept the parameter `user_id`.
+
+Note that the variable paths should be put as far back as possible in the array, since the path requested will be checked against each path in `urlpatterns` in order. For more information take a look at the [Django documentation](https://docs.djangoproject.com/en/2.1/topics/http/urls/).
+
+### 3. Unpackaging - `views.py`
+In section 2 we mentioned that a function is passed as a first-class object into the `django.urls` `path(...)` function. This function will need to be defined in `views.py`, found under `project_folder/myapp/views.py` (see above graphic). This file must first be imported into `urls.py`, however.
+```python
+from myapp import views
+```
+Next, navigate back to `views.py`. At the top, add the following imports:
+```python
+from django.views import View # only if using class-based views
+from django.http import HttpResponse, JsonResponse, QueryDict
+from myapp.models import *
+```
+First, we imported the `View` library, which is helpful only if we want to define class-based views. The much easier method is to simply use direct functions, in which case this line can be neglected. Second, we imported some Django functions that we will need for unpackaging the `request` and returning the proper `response`. Finally, we imported our models - defined in `project_folder/myapp/models.py`. This file is initially empty, but if you would like to define [models](https://docs.djangoproject.com/en/2.2/topics/db/models/) to implement here, you need to import them.
+
+Let's return to our example path, where we called a function `userInfo` on the path `users/<str:user_id>`. Our function here would have to be defined as follows:
+
+```python
+def userInfo(request, user_id) {
+    ...
+}
+```
+
+Every view function must take in a parameter `request` as its first parameter, and then potentially the variable path. `request` is a complex parameter, storing lots of information. The two parts we need for now are the `method` and `META` fields. More information on `requests` and `responses` can be found [here](https://docs.djangoproject.com/en/2.2/ref/request-response/).
+
+Suppose our method wanted to display the user's `user_id` upon a GET request to this URL, in the form of an [H2 tag](https://www.w3schools.com/tags/tag_hn.asp). We would then write the following inside the function:
+
+```python
+if request.method == "GET":
+    return HttpResponse("<h2>" + str(user_id) + "</h2>")
+```
+
+Django's HttpResponse formats and displays a string written in proper HTML style to the user on the front end. Note that we did not need to actually cast user_id as a string - since we already assumed it was in the path declaration - but it is good form to do so.
+
+Now suppose we wanted to return all the information contained in a POST request sent to the same URL in the form of a Json object. We would then write the following below the `if` statement above:
+
+```python
+if request.method == "POST":
+    data = QueryDict(request.META["QUERY_STRING"]).dict()
+    return JsonResponse(data)
+```
+
+A lot of things are going on here, so let's break it down. Depending on how the request was sent, the data, which are just keys and values, may be stored in either `request`'s `META["QUERY_STRING"]` or `body` fields. `body` is much more secure than the query string, but again, in which place it was stored depends on how the request was sent. Let us assume it was stored in the query string. Then [QueryDict](https://docs.djangoproject.com/en/2.2/topics/db/queries/) unpackages the string into a `QueryDict` object, which then can be formatted into a traditional dictionary format of keys and values by calling its `dict()` method. Finally, we format this dictionary as a JsonResponse and return it to the user. Our completed `views.py` will then look like this:
+
+```python
+from django.views import View # only if using class-based views
+from django.http import HttpResponse, JsonResponse, QueryDict
+from myapp.models import *
+
+
+def userInfo(request, user_id) {
+
+    if request.method == "GET":
+        return HttpResponse("<h2>" + str(user_id) + "</h2>")
+
+    if request.method == "POST":
+        data = QueryDict(request.META["QUERY_STRING"]).dict()
+        return JsonResponse(data)
+}
+```
+
+
+### And... that's it!
+Now you know how to recieve, interpret, and return information on your server. Remember, you can test your server locally by running
+```sh
+$ python manage.py runserver [port - usually 8000]
+```
+from inside the project folder. Happy coding!

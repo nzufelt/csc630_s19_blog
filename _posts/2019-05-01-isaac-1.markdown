@@ -1,0 +1,26 @@
+---
+layout: post
+title:  "The App Framework in Rails"
+date:   2019-05-01 10:41:0 -0400
+author: Isaac Hershenson
+# categories: jekyll update
+---
+# The App Framework in Rails
+
+When you create a new Rails application, your computer auto-generates various files and folders for you. The most important of these folders are the app, bin, config, and db folders. In this blog post, I will be talking about the app folder, which holds all of the controllers, models, views, helpers, mailers, channels, jobs and assets for your application. I know that sounds like a lot but lets break it down a little bit and explore the Models, Views, and Controllers of a Rails app.
+
+## Controllers
+
+The Controller folder is in essence the control tower behind your entire application. It makes all of the connections between the user, model, and view parts of your app. The controller folder is an integral part of the MVC (Model View Controller) architecture of Rails. You can read more about this architecture at:
+[Understanding the Model-View-Controller (MVC) Architecture in Rails](https://www.sitepoint.com/model-view-controller-mvc-architecture-rails "Understanding the Model-View-Controller (MVC) Architecture in Rails"). The controller files of a Rails application have a few responsibilities. Most of these responsibilities can be boiled down if you think of the controller as a sort of middle man. It requests tasks that other folders execute. The Controller asks questions to the Model, but lets the model do all of the problem solving. Similarly, the Controller tells the View what to render but does none of the rendering work itself. You can learn a little more about these relationships here: [Intermediate Rails: Understanding Models, Views and Controllers](https://betterexplained.com/articles/intermediate-rails-understanding-models-views-and-controllers/). By now you may have an OK idea of what the controller does, but you may be wondering, how does it do it? The Controller is called upon after every HTTP request made by the user. This action is best summarized by The Odin Project whose website explains that:  "After an HTTP request comes into your Rails application and the router decides which controller and action to map it to, Rails packages up all the parameters that were associated with that request and runs the specified method in the specified controller." Now that you know how and what the Controller is used for, let us move on to the Model folder.
+
+# Models
+
+As I mentioned in the Controller section, the Model files are used to execute tasks that are requested by the Controller. Put simply, Models act as object-relational guides to the databases that hold the information requested by the Controller. For a more detailed explanation look at this fantastic post by Launch Academy, [Writing a Rails Model](https://launchacademy.com/codecabulary/learn-rails/writing-a-rails-model). Lastly, let us move on to the Views part of the App folder.
+
+# Views
+
+Similar to Models, Views are called upon by the Controller and execute similar requests to the Models except with the interface instead of data. The Views files are all Erb (Ruby and HTML combined) files and account for 100% of your applications stylistic aspect. To learn more please visit the official Rails guide at: [ Action View Overview](https://guides.rubyonrails.org/action_view_overview.html).
+
+
+If you want to learn more be sure to check out the official Rails Guide and other blog posts on Rails that are all over the internet.

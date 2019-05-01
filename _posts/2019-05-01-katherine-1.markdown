@@ -1,0 +1,136 @@
+---
+layout: post
+title:  "Where Am I? Finding coordinates with the Google Maps Geocoding API"
+date:   2019-05-01 10:41:0 -0400
+author: Katherine Duan
+# categories: jekyll update
+---
+# Where Am I?
+## Finding coordinates with the Google Maps Geocoding API
+
+In this blog post, you will learn how to find the **latitude** and **longitude** of an address and understand each step of the process.
+
+#### What is the Google Maps Geocoding API?
+
+Geocoding is a process that finds the **GPS coordinates** of a street address. The *Google Maps Geocoding API* provides an easy way to access this information using an [**HTTP Request**][HTTP].
+
+#### Getting Started
+
+Before you start using the Geocoding API, you must get an [**API key**][APIkey]. The **API key** is added to your a app or website and tracks the API requests linked to your project for billing purposes. *Don’t worry*, it takes a very large number of hits for Google to start charging you.
+
+Once you get your API key, you can begin formatting your **Geocoding API request**. The Geocoding API request is formatted like this:
+
+`https://maps.googleapis.com/maps/api/geocode/OUTPUT_FORMAT?PARAMETERS`
+
+`OUTPUT_FORMAT` must be replaced with either `json` or `xml`. `json` indicates that the output will be in [JavaScript Object Notation][JSON] (JSON), and `xml` indicates that the output will be in [XML][XML]. This tutorial will focus on JSON outputs.
+
+`PARAMETERS` must include an **address** and your **API key**. For the address *180 Main Street, Andover, MA 01810*, the request would be:
+
+`https://maps.googleapis.com/maps/api/geocode/json?address=180+Main+Street,+Andover,+MA+01810&key=YOUR_API_KEY`
+
+This request gives you the output:
+```JSON
+{
+   "results" : [
+      {
+         "address_components" : [...],
+         "formatted_address" : "Holmes Library, 180 Main St, Andover, MA 01810, USA",
+         "geometry" : {
+            "bounds" : {
+               "northeast" : {
+                  "lat" : 42.6473773,
+                  "lng" : -71.1319472
+               },
+               "southwest" : {
+                  "lat" : 42.6469545,
+                  "lng" : -71.1326112
+               }
+            },
+            "location" : {
+               "lat" : 42.6471421,
+               "lng" : -71.13231859999999
+            },
+            "location_type" : "ROOFTOP",
+            "viewport" : {
+               "northeast" : {
+                  "lat" : 42.6485148802915,
+                  "lng" : -71.1309302197085
+               },
+               "southwest" : {
+                  "lat" : 42.6458169197085,
+                  "lng" : -71.13362818029151
+               }
+            }
+         },
+         "place_id" : "ChIJjQTtee0I44kRsa28CJ8UMW0",
+         "types" : [ "premise" ]
+      }
+   ],
+   "status" : "OK"
+}
+```
+*Please note that `"address components"` within `"results"` has been redacted.*
+
+Our JSON response has two root elements: `"results"` and `"status"`. `"results"` contains the **geocoded data** about our address, and `"status"` contains [**metadata**][Status] about our request that is helpful for debugging.
+
+We can also see that the **latitude** and **longitude** of our address are located under `"results"` &rarr; `"geometry"` &rarr; `"location"` as `"lat"` and `"lng"`.
+
+Once we get the data, we can parse the JSON to extract the **latitude** and **longitude** with a simple python method:
+```python
+def geocode(address):
+         address = urllib.parse.quote_plus(address)
+        request = "https://maps.googleapis.com/maps/api/geocode/json?address=%s&key=%s" % (address, YOUR_API_KEY)
+        response = urllib.request.urlopen(request)
+        data = json.loads(response.read().decode('utf8'))
+
+        if data['status'] == 'OK':
+            lat = data['results'][0]['geometry']['location']['lat']
+            lng = data['results'][0]['geometry']['location']['lng']
+
+            return Decimal(lat), Decimal(lng)
+```
+For your code to work, add the following lines to the top of your python file:
+```python
+import urllib
+import json
+from decimal import Decimal
+```
+#### Let’s break down this code...
+
+```python
+def geocode(address):
+```
+We can see that this method takes in a **string** called `address` which is formatted like a normal address (for example: `“180 Main Street, Andover, MA 01810”`).
+```python
+       address = urllib.parse.quote_plus(address)
+```
+`urllib.parse.quote.plus(address)` is a handy method from the `urllib` python package that simply replaces each space in a string with a **+**. After calling this method, our example address becomes: `180+Main+Street,+Andover,+MA+01810`
+
+Now we construct the request url by inserting the edited address and your API key:
+
+```python
+        request = "https://maps.googleapis.com/maps/api/geocode/json?address=%s&key=%s" % (address, YOUR_API_KEY)
+```
+
+Next we load the JSON data using methods from the `urllib` and `json` packages. The method `json.loads` returns a [**dictionary**][Dict] from which we can extract our **latitude** and **longitude**:
+```python
+        response = urllib.request.urlopen(request)
+        data = json.loads(response.read().decode('utf8'))
+```
+If all our data is properly loaded (i.e. the `'status'` is `'OK'`), we can find the **latitude** and **longitude** in the data dictionary and return them as `Decimals`:
+```python
+         if data['status'] == 'OK':
+            lat = data['results'][0]['geometry']['location']['lat']
+            lng = data['results'][0]['geometry']['location']['lng']
+
+            return Decimal(lat), Decimal(lng)
+```
+
+##### Congratulations! You just used the Geocoding API to find GPS coordinates for an address.
+
+[APIkey]: <https://cloud.google.com/maps-platform/?__utma=102347093.1799659322.1555711030.1555713391.1555713391.1&__utmb=102347093.0.10.1555713391&__utmc=102347093&__utmx=-&__utmz=102347093.1555713391.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none)&__utmv=-&__utmk=160549309&_ga=2.230547164.1176832213.1555711030-1799659322.1555711030#get-started>
+[HTTP]: <https://www.w3schools.com/tags/ref_httpmethods.asp>
+[JSON]: <https://www.json.org>
+[XML]: <https://www.w3schools.com/xml/xml_whatis.asp>
+[Status]: <https://developers.google.com/maps/documentation/geocoding/intro#StatusCodes>
+[Dict]: <https://www.w3schools.com/python/python_dictionaries.asp>

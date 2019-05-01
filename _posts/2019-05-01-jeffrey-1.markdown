@@ -1,0 +1,76 @@
+---
+layout: post
+title:  "Understanding Middleware in Express.js"
+date:   2019-05-01 10:41:0 -0400
+author: Jeffrey Shen
+# categories: jekyll update
+---
+# Understanding Middleware in Express.js
+
+Middleware in [Express.js](https://expressjs.com/) are functions that are executed before the main route handler, and have access to the `req` and `res` object of an Express route. But what does that really mean? And why do we care? In this blog post, I'll seek to answer how middleware works and can be used.
+
+## Potential Uses
+
+Before I begin, why do we even care about middleware? Here are just a few popular uses:
+
+* **Sessions**: Having a middleware which automatically provides a `req.user` object when users are logged in.
+* **Logging**: Automatically logging certain information (data, path, request information) on each path.
+* **Body Parsing**: Parsing form information or other request information into a more useful format. A good example of this is the popular [body parser](https://github.com/expressjs/body-parser) library
+
+As you can see, middleware can—and should be—used in place of writing the same code across multiple paths.
+
+## Writing Middleware
+
+Middleware functions are just that: functions. They take three parameters—`req`, `res`, and `next`—and can be created as follows:
+
+```
+function myAwesomeMiddleware(req, res, next){
+  //Do something cool
+  next()
+}
+```
+
+`req` and `res` are the same parameters used by an express route, and can be modified and acted upon in the exact same way as an express route. You can even render pages or send status codes with middleware, though that is not necessarily a good idea.
+
+`next` refers to the "next" function to be executed after the current middleware. For example, next could refer to another middleware function or the express route itself. Unless a response is sent in the middleware (i.e. `res.send()`), `next()` **must** be called in a middleware, otherwise your express server will get stuck and never send a response back.
+
+So for example, the middleware below will just add an attribute to the `req` object:
+
+```
+function exampleMiddlewar(req, res, next){
+  req.hello = "Hello World!";
+  next();
+}
+```
+
+Great! For every route this middleware is applied to, there will be a new attribute (`req.hello`) available.
+
+## Applying Middleware
+
+Now that you've written your own middleware, how do you actually apply it to express? There are three possible ways:
+
+1. **Applying middleware to all routes**:
+
+  `app.use(nameOfMiddleware)`
+
+2. **Applying middleware to some routes**:
+
+  `app.use('/a/path', nameOfMiddleware)`
+  With this, any path beginning with `/a/path` will have the middleware applied to it. Express regex path matching can also be used.
+
+3. **Applying middleware to one route**
+
+  ```
+  app.get('/a/path', nameOfMiddleware, function(req, res){
+    //Do something
+  })
+  ```
+  This middleware will only be called on `/a/path`. Additionally, middleware can be "chained" so multiple middleware execute on one path. This can be done by replacing `nameOfMiddleware` with an array of middleware functions.
+
+
+## Further Reading
+
+If you're interested in learning more about this topic, or if you would like to see some of the sources I referred to when writing this article, check out the list below:
+
+* [expressjs.com/en/guide/writing-middleware.html](https://expressjs.com/en/guide/writing-middleware.html)
+* [hackernoon.com/middleware-the-core-of-node-js-apps-ab01fee39200](https://hackernoon.com/middleware-the-core-of-node-js-apps-ab01fee39200)

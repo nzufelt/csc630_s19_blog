@@ -1,0 +1,277 @@
+---
+layout: post
+title:  "A Full Overview of Variables and Constants in Swift"
+date:   2019-05-01 10:41:0 -0400
+author: Rachna Lewis
+# categories: jekyll update
+---
+<p style="color:green; font-family:'Bebas Neue;' font-size: 1em">CSC630 Full Stack App Development</p>
+
+<center><span style="color:#89cff0; font-family:'Bebas Neue'; font-size: 1.3em;"><h1>A Full Overview of Variables and Constants in Swift</h1></span></center>
+
+<img align="left" src="PA_logo.png" width="70">
+<p style="font-family:'Bebas Neue;'">
+
+&nbsp;  Rachna Lewis
+&nbsp;  April 22, 2019 </p>
+
+<p style="font-family:'Bebas Neue'; font-size: 1.3em;">It can be difficult to navigate the unique type system associated with Swift, especially when it comes to understanding the declaration of variables and constants. In this blog post, we will review the difference between the declarative statements"`var`" and "`let`," the difference between using a colon (`:`) and an equals sign (`=`) in various situations, how to use optionals, and generally how the statically typed, strongly typed, and type inferenced aspects of the language function within Swift.
+&nbsp;
+&nbsp;
+&nbsp;
+</p>
+
+<span style="color:#89cff0; font-family:'Bebas Neue'; font-size: 1.7em;">**Variables**</span>
+___
+<p style="font-family:'Bebas Neue'; font-size: 1.3em;">The term "`var`" is used to declare a **variable** in Swift. These are values that are anticipated to change during runtime. Examples of variables in Swift are numbers, text, buttons, or images.
+&nbsp;
+</p>
+
+<p style="font-family:'Bebas Neue'; font-size: 1.3em;">You can declare a variable in one of the following ways:</p>
+
+<p style="font-family:'Bebas Neue'; font-size: 1em;">1. Initialize a value for a general "`var`" and allow type inferencing to take care of defining the data type </p>
+<img align="left" src="pic_1.png">
+
+<p style="font-family:'Bebas Neue'; font-size: 1em;">2. Declare its data type explicity and then set a value for it </p>
+<img align="left" src="pic_2.png">
+
+<p style="font-family:'Bebas Neue'; font-size: 1em;">3. Declare its data type and initialize a value all on one line </p>
+<img align="left" src="pic_3.png">
+
+<p style="font-family:'Bebas Neue'; font-size: 1.3em;">Another thing to note is that you can declare multiple variables of the same type or multiple variables of different types and/or values all on the same line as seen below:
+</p>
+<img align="left" src="abc.png">
+<p>
+&nbsp;
+&nbsp;
+&nbsp;
+</p>
+<img align="left" src="xyz.png">
+
+<p style="font-family:'Bebas Neue'; font-size: 1.3em;">An **invalid** way to declare a variable would look something like this:
+&nbsp;
+</p>
+<img align="left" src="wrong.png">
+<p style="font-family:'Bebas Neue'; font-size: 1.3em;">
+&nbsp;
+&nbsp;
+You would recieve an error statement such as:
+&nbsp;
+</p>
+<img align="left" src="error.png">
+<p style="font-family:'Bebas Neue'; font-size: 1.3em;">
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+This is because Swift is a statically typed language, so all variables, constants, and functions must have their types declared in advance (more on that later).
+&nbsp;
+&nbsp;
+&nbsp;
+</p>
+
+<span style="color:#89cff0; font-family:'Bebas Neue'; font-size: 1.7em;">**Constants**</span>
+___
+<p style="font-family:'Bebas Neue'; font-size: 1.3em;">The term "`let`" is used to declare a **constant** in Swift. These are immutable values, which means they cannot be changed after their declaration. </p>
+
+<p style="font-family:'Bebas Neue'; font-size: 1.3em;">You can declare a constant in one of the following ways:</p>
+
+<p style="font-family:'Bebas Neue'; font-size: 1em;">1. Use "`let`" to initialize a value for a general constant and allow type inferencing to take care of defining the data type </p>
+<img align="left" src="c1.png">
+
+<p style="font-family:'Bebas Neue'; font-size: 1em;">2. Declare its data type explicity and then set a value for it </p>
+<img align="left" src="c2.png">
+
+<p style="font-family:'Bebas Neue'; font-size: 1em;">3. Declare its data type and initialize a value all on one line </p>
+<img align="left" src="c3.png">
+
+<p style="font-family:'Bebas Neue'; font-size: 1.3em;">Just like with variables, you can also declare multiple constants of the same type or multiple constants of different types and values all on the same line as well.
+</p>
+
+<p style="font-family:'Bebas Neue'; font-size: 1.3em;">An **invalid** way to declare a constant would look something like this:
+&nbsp;
+</p>
+<img align="left" src="incorrect.png">
+<p style="font-family:'Bebas Neue'; font-size: 1.3em;">
+&nbsp;
+&nbsp;
+You would recieve the same error statement as we did above by simply typing "`var s`," again due to Swift's statically typed nature.
+</p>
+
+<p style="font-family:'Bebas Neue'; font-size: 1.3em;"> (Note: A fun feature of Swift is that you can use almost any character you like for constant and variable names, including Unicode characters, emojis, etc.)
+So, a declaritive statement such as...
+</p>
+<img align="left" src="doggo.png">
+<p style="font-family:'Bebas Neue'; font-size: 1.3em;">
+&nbsp;
+&nbsp;
+&nbsp;
+would be completely valid.
+&nbsp;
+&nbsp;
+&nbsp;
+</p>
+
+<span style="color:#89cff0; font-family:'Bebas Neue'; font-size: 1.7em;">**Colon vs. Equals Sign**</span>
+___
+<p style="font-family:'Bebas Neue'; font-size: 1.3em;">As you may have already figured out, the **colon** in Swift is used to **declare the type** of a variable or constant whereas the **equals sign** is used to **assign a value** to it.
+
+<span style="font-family:'Bebas Neue'; font-size: 1.3em;">
+The various data types in Swift include*:
+
+* Integer (`Int`)
+    * Small numbers between -128 to 127 (`Int8`)
+    * Zero or any positive value (`UInt`)
+* String (`String`)
+* Boolean (`Bool`)
+* Float (`Float`)
+* Double (`Double`)
+* Character (`Character`)
+* Tuple - a group of various values represented as one
+
+***Note:** I included the declaritive statement for each data type in parenthesis next to their name
+</span>
+
+<p style="font-family:'Bebas Neue'; font-size: 1.3em;">An **invalid** use of the colon and the equlas sign to declare a variable or constant would look something like this:
+</p>
+<img align="left" src="invalid.png">
+<p style="font-family:'Bebas Neue'; font-size: 1.3em;">
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+You cannot use an equals sign to declare a data type just as you cannot use a colon to instantiate a value.
+</p>
+
+<span style="color:green; font-family:'Bebas Neue'; font-size: 1.5em;">
+&nbsp;
+&nbsp;
+**Classes and Functions**</span>
+___
+<p style="font-family:'Bebas Neue'; font-size: 1.3em;">When dealing with classes and functions, the colon means something entirely different.</p>
+
+<p style="font-family:'Bebas Neue'; font-size: 1.3em;"> For a class declaration, such as:
+&nbsp;
+</p>
+<img align="left" src="class.png">
+<p style="font-family:'Bebas Neue'; font-size: 1.3em;">
+&nbsp;
+&nbsp;
+&nbsp;
+The class names following the colon represent **superclasses**.
+&nbsp;
+&nbsp;
+The word "`class`" comes right before the class name, `AppDelegate`. Following the colon to the right of the class name are the names of the superclasses, `UIResponder` and `UIApplicationDelegate`, which are the classes that `AppDelegate` inherits methods from. When dealing with superclasses, Swift checks that all overrided methods, properties, and subscripts belonging to their superclass are correct by comparing the override definition with the superclass definition and making sure they match.
+</p>
+
+<p style="font-family:'Bebas Neue'; font-size: 1.3em;"> For a function declaration, such as:
+&nbsp;
+</p>
+<img align="left" src="func_.png">
+<p style="font-family:'Bebas Neue'; font-size: 1.3em;">
+&nbsp;
+&nbsp;
+&nbsp;
+The word following the colon represents the **parameter type**.
+&nbsp;
+&nbsp;
+The word "`func`" comes right before the function name, `applicationWillResignActive`. Following the first open parenthesis, there is an underscore( `_` ), which supresses something known as the "arguement label" for all the parameters in the function (in this case there is only one parameter). Each item listed after the underscore is in the form `parameter name : parameter type`. An arguement label is simply an alternative name for the parameter name which, if provided in place of that underscore, would have to be used in all method or function calls.
+&nbsp;
+&nbsp;
+&nbsp;
+</p>
+
+<span style="color:#89cff0; font-family:'Bebas Neue'; font-size: 1.7em;">**Optionals (? vs. !)**</span>
+___
+<p style="font-family:'Bebas Neue'; font-size: 1.3em;">
+Optional types can also be used when declaring a variable or constant. They handel the absence of a value and prevent you from being able to encounter null pointer exception in Swift. There are two symbols for optionals:
+&nbsp;
+`?` - explicitly wrapped optional (used for optional binding or optional chaining) - use `?` after the type of a value to indicate that the variable/constant either contains a value or is `nil` to show that the value is missing
+<img align="left" src="q.png">
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+`!` - implicitly wrapped optional (used for forced unwrapping) - only use `!` if you are absolutely certain that the optional you are accessing contains a value
+<img align="left" src="!.png" >
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+</p>
+
+<span style="color:#89cff0; font-family:'Bebas Neue'; font-size: 1.7em;">**The Type System of Swift**</span>
+___
+<p style="font-family:'Bebas Neue'; font-size: 1.3em;">In order to understand the nature of variables and constants within Swift (i.e. why declarations as simple as "`var s=3`" work) we must learn about certain aspects of the overall type system of Swift.</p>
+
+<span style="font-family:'Bebas Neue'; font-size: 1.3em;">There are a few key aspects of Swift that make up its type system.
+><p style="font-family:'Bebas Neue'; font-size: 1.2em;"> It's statically typed </p>
+><p style="font-family:'Bebas Neue'; font-size: 1.2em;"> It's strongly typed   </p>
+><p style="font-family:'Bebas Neue'; font-size: 1.2em;"> It uses type inference   </p>
+><p style="font-family:'Bebas Neue'; font-size: 1.2em;"> It's a type-safe language  </p>
+</span>
+
+<span style="color:green; font-family:'Bebas Neue'; font-size: 1.5em;"> **Statically Typed** </span>
+___
+<p style="font-family:'Bebas Neue'; font-size: 1.3em;">Every variable, constant, and function in Swift is required to have its type declared in advance for it to be valid. Because of this, Swift is said to be "statically typed." When you declare a variable, you can either declare its type directly or leave it to be inferred.
+&nbsp;
+&nbsp;
+</p>
+
+<span style="color:green; font-family:'Bebas Neue'; font-size: 1.5em;">**Strongly Typed**</span>
+___
+<p style="font-family:'Bebas Neue'; font-size: 1.3em;">During Swift's compile time, it is constantly checking data types and ensuring that they match up. So, whenever you provide an arguement for a function or use a variable or constant, Swift will constantly re-check data types. You are not allowed to pass a string to a function expecting an integer, etc. and that makes Swift "strongly typed." For functions specifically, each function is given a "type-signature" based on its individual parameters and its return type. This type-signature must match up with the type-signature produced by a function call with any and all arguements you provide to a given program.
+&nbsp;
+&nbsp;
+</p>
+
+<span style="color:green; font-family:'Bebas Neue'; font-size: 1.5em;">**Type Inference**</span>
+___
+<p style="font-family:'Bebas Neue'; font-size: 1.3em;"> Type inference, as mentioned above, is the way in which Swift infers the data type of a given variable or constant that does not have one explicitly stated. There are a few steps the compiler undergoes when implementing type inference on a certain variable/constant such as:
+&nbsp;
+
+**1.** _lectical analysis_ - splits input file bytes to units like numbers and strings (ex. `var`, `str`, `=`, `"`, `string`, `"` are all separate)
+&nbsp;
+**2.** _syntax analysis_ - also known as parsing, compiler constructs and verifies an [abstract syntax tree](https://en.wikipedia.org/wiki/Abstract_syntax_tree) based on the grammar of the language (ex. constructs the abstract syntax tree for a variable declaration statement: `var variable_name = expression` where expression is a string literal)
+&nbsp;
+**3.** _semantic analysis_ (with type inference) - type inference infers the type of the given expression (ex. the expression is a string literal so the compiler would infer the type to be a `String`)
+&nbsp;
+**4.** _final steps_ - the compiler typically generates intermediate code, optimizes the intermediate code, and generates assembly code. Then, the tool chain outside of the compiler usually has a linking phase that produces the final executable product
+&nbsp;
+&nbsp;
+Type inference adds a certain amount of convenience to your code to not have to declare your data type every time one is initialized (though you will get the same amount of compiler errors nonetheless so some consider it to be a false benefit).
+&nbsp;
+&nbsp;
+</p>
+
+<span style="color:green; font-family:'Bebas Neue'; font-size: 1.5em;">**Type-Safe**</span>
+___
+<p style="font-family:'Bebas Neue'; font-size: 1.3em;"> Type safety in Swift simply means that when a variable is declared or infered to be of a certain type, you may not modify it later on with or change it into a different data type.
+&nbsp;
+&nbsp;
+</p>
+
+<span style="color:#89cff0; font-family:'Bebas Neue'; font-size: 1.7em;">**Reference Sources**</span>
+
+<span style="font-family:'Bebas Neue'; font-size: 1.2em;">
+https://learnappmaking.com/swift-variables-constants-how-to/
+https://docs.swift.org/swift-book/LanguageGuide/TheBasics.html
+https://stackoverflow.com/questions/34333173/difference-between-and
+https://stackoverflow.com/questions/24002092/what-is-the-difference-between-let-and-var-in-swift
+https://www.aidanf.net/learn-swift/types_and_type_inference
+https://www.programiz.com/swift-programming/data-types
+https://docs.swift.org/swift-book/ReferenceManual/Declarations.html#grammar_constant-declaration
+https://stackoverflow.com/questions/28779843/how-does-type-inference-automatic-type-detection-works-in-swift
+https://stackoverflow.com/questions/24057171/what-the-meaning-of-question-mark-in-swift
+https://docs.swift.org/swift-book/LanguageGuide/TheBasics.html#//apple_ref/doc/uid/TP40014097-CH5-ID334
+https://docs.swift.org/swift-book/LanguageGuide/Inheritance.html
+
+</span>

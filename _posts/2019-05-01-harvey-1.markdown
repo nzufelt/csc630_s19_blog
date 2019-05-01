@@ -1,0 +1,212 @@
+---
+layout: post
+title:  "Cleaning up HTML Code in Rails with Haml"
+date:   2019-05-01 10:41:0 -0400
+author: Harvey Zheng
+# categories: jekyll update
+---
+# Cleaning up HTML Code in Rails with Haml
+
+## What is Haml?
+
+Haml, which stands for _**HTML abstraction markup language**_, is a markup language like HTML that **makes code look better and more readable**. It relies on indentations for nested elements, forcing a developer to create clean and more readable HTML code. I use it with Rails, but it can be used with any other frameworks that use Ruby, like Hanami or Sinatra, since Haml is a rubygem.
+
+Here's an example of some regular HTML compared to Haml code:
+
+#### HTML
+```
+<html>
+  <head>
+    <title>A Website></title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="panel" id="one">
+        <h1>Header</h1>
+      </div>
+      <div class="panel" id="two">
+        <img src="/path/to/img"/>
+      </div>
+      <div class="panel" id="three">
+        <p>Description</p>
+      </div>
+    </div>
+  </body>
+</html>
+```
+
+#### Haml
+
+```
+!!!
+%html
+  %head
+    %title A Website>
+  %body
+    .container
+      #one.panel
+        %h1 Header
+      #two.panel
+        %img{:src => "/path/to/img"}
+      #three.panel
+        %p Description
+```
+As you can see, Haml is a lot more efficient in terms of lines of code, but also in terms of writing it out. You don't have to close tags anymore, which could save time in debugging when the only issue with a layout is an extra or a missing closing tag. In my opinion, the efficiency makes code more pleasant to look at, too.
+
+Haml also helps build modern web layouts that rely on divs, since all you need to do is include the class or the id tags, no `<div class"..."></div>` required.
+## How to Use Haml as HTML
+
+Haml is basically exclusively for a Ruby web development environment, such as for Ruby on Rails. So, installing Haml is pretty easy, just use run `gem install haml`.
+
+Make sure it's added to your gemfile so that it can be compiled in production or just any computer that might not have haml installed.
+
+Filenames should be something like `show.html.haml`. Make sure to have ".html.haml" as the file extension.
+
+Using Haml is pretty simple. Here's a rundown of how to use Haml in place of HTML.
+
+### Plain tags
+Each tag uses a percent symbol instead of greater than and less than symbols. As you can see, elements at the same depth within a tag will have the same level of indentations. In addition, as I mentioned before, each tag no longer uses a closing tag; instead, the next line with the same number of indents or fewer signifies a closing tag.
+
+_Note:_ In order to properly use the `%html` tag, you need `!!!` in the line above it, before anything else.
+#### HTML
+```
+<body>
+  <div>
+    <ul>
+      <li>Item 1</li>
+      <li>Item 2</li>
+      <li>Item 3</li>
+    </ul>
+  </div>
+</body>
+```
+#### Haml
+```
+%body
+  %div
+    %ul
+      %li Item 1
+      %li Item 2
+      %li Item 3
+```
+
+### Using classes and ids
+To use **classes**, follow up a tag with something like `.gray`. With **ids**, you would use something like `#one` immediately following the tag.
+
+This is the case with every element except for a div, which does not require the `%div` to be present. For example, using just `.container` in the entire line will give you a `div` with the `container` class.
+
+For multiple elements, you can pile the tags on top of each other, one after the other, such as: `%p.small.center.grey#section-two`
+
+#### HTML
+```
+<div class="container">
+  <h2 class="center fancy">Fancy Header</h2>
+  <div class="row">
+    <p class="center light" id="section-one">Description Text</p>
+  </div>
+</div>
+```
+#### Haml
+```
+.container
+  %h2.center.fancy Fancy Header
+  .row
+    %p.center.light#section-one Description Text
+```
+
+### Using attributes
+Writing attributes in Haml looks like it's directly out of Ruby. After all the tags, classes, and ids, you can put `{:attr1 => "", :attr2 => ""}``, essentially assigning a value to a Ruby symbol.
+
+_Note:_ A symbol in Ruby is just a piece of data that stores an immutable string, can be used as keys to a hash, and is more efficient in terms of storage than a variable. [Here](http://rubylearning.com/satishtalim/ruby_symbols.html) is a resource to read up more on Ruby symbols.
+#### HTMl
+```
+<link rel="stylesheet" type="text/css" href="style.css">
+
+...
+
+<img class="big-img" src="/path/to/img"/>
+```
+#### Haml
+```
+%link{:href => "style.css", :rel => "stylesheet", :type => "stylesheet"}
+
+...
+
+%img.big-img{:src => "/path/to/img"}
+```
+
+### Additional notes: long blocks and commenting
+When dealing with longer blocks of text in Haml, you do not have to put them all in the same line. Instead, like in HTML, you can separate them into different lines to make it a bit easier to read and edit.
+
+Put the text on the next line, and then put the elements at most one indent ahead of the level of indentation of the tag, like in the following:
+#### HTML
+```
+<p>
+  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+  Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+  Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+  Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+</p>
+```
+#### Haml
+```
+%p
+ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+ Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+ Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+```
+When **commenting** in Haml, you use `/` and then whatever your comment is, rather than `<!-- -->`. It can also wrap indented sections of code.
+#### HTML
+```
+<!-- Commented line -->
+<!--
+  <div>
+    <p>Text</p>
+  </div>
+-->
+<div>
+  <p>Text</p>
+</div>
+```
+#### Haml
+```
+/ Commented line
+/
+  %div
+    %h2 Text
+%div
+  %p Text
+```
+
+## Haml in Rails
+
+Haml also helps simplify the embedded ruby parts of rails, similar to how it simplifies HTML.
+
+A haml file will be able to find any properties of any objects that exist in that view, such as `user.name` if you are in the users view, and the user table has a column named `name`.
+
+### Embedded Ruby
+
+Using `=` followed by the rest of your ruby code is equivalent to `<%= %>`: they evaluate everything based on the ruby, and then insert it into the document.
+
+Using `-` followed by other ruby code will allow you to use regular ruby logic, such if loops or for each loops. This is useful for something like displaying information to users of certain types, such as an admin vs. a teacher vs. a student. You should generally try to avoid using this, though, since logic should mostly be handled in the controllers, helpers, or partials.
+
+You can also interpolate ruby code within plain text by using `#{code here}`. If you want to pass a class through with this, you would need to set that as an attribute rather than use the usual `.class`.
+
+Some examples of using embedded ruby with Haml:
+```
+ = render :partial => "navbar"
+ - if signed_in_user?
+  %h3 Welcome back #{@current_user.name}!
+  %p{:class => "#{@current_user.type}"} Here's your stuff
+```
+In this example, the first line uses Ruby to render code from the partial named "_navbar." The second line checks if the boolean `signed_in_user` is true or not (essentially if a user is signed in or not). After, it will display the name of the current user, depending on the name fetched from the table, and will change the styling of "Here's your stuff" based on the type the current user is based off the table.
+
+## Wrapping it up
+Personally, as someone who's developed in Rails for a few years now, to start using Haml. It forces you to have good styling, which makes debugging less of a hassle later on. It's also a lot less annoying to code, too, since you don't have to worry about closing tags.
+
+If you want to learn more about Haml, here are some useful links:
+ - [Haml Documentation](http://haml.info/docs/yardoc/file.REFERENCE.html)
+ - [Haml Tutorial](http://haml.info/tutorial.html)
+ - [More about Haml](http://haml.info/about.html)
+ - [HTML to Haml Converter](https://html2haml.herokuapp.com/)

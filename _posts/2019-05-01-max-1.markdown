@@ -1,0 +1,72 @@
+---
+layout: post
+title:  "A Simple Intro to React Components"
+date:   2019-05-01 10:41:0 -0400
+author: Max Ivakhno Bykova
+# categories: jekyll update
+---
+# A Simple Intro to React Components
+
+React.js is a javascript library widely used to create web-apps and other interactive features of a website. When writing code in react, you are frequently going to want to create custom classes that extend the library's "React.Component" in order to utilize its functionality. Let's get started on using this feature of React.
+
+This code declares a React.Component class called "Hello", and should be familiar to most people with experience in other programming languages with inheritance:
+```
+class Hello extends React.Component {}
+```
+
+This is incomplete though. A proper React Component should have a "render" method that returns something for the component to display on screen. Let's add that method to the component.
+```
+class Hello extends React.Component {
+  render() { return(); }
+}
+```
+
+Now we can add whatever we want to the return method! Let's write some html-like code inside it so that react displays "Hello World". Its actually not html but rather a syntax called JSX: https://reactjs.org/docs/introducing-jsx.html
+
+```
+class Hello extends React.Component {
+  render() { return( <h1>Hello World!</h1> ); }
+}
+```
+
+This alone won't be enough. If you want this code to actually render, you now have to call "ReactDOM.render()" on your Hello component.
+
+```
+ReactDOM.render( <Hello />, document.getElementById('root') );
+```
+
+You can actually just straight up write your JSX in ReactDOM.render() too, as is done in this official React.js tutorial for creating a Hello World program:
+https://reactjs.org/docs/hello-world.html
+
+### User Defined Components
+
+React also allows the user to create custom JSX components. If you are going to create a blog for example, you may want to define a "Section" component that has a subtitle, a few paragraphs and maybe a few images.
+
+You can do this by telling one of your react components to try to render a custom "Section" component instead of its individual parts. You can then pass parameters (called "props") to "Section", for example, to specify what background color you want the section to have.
+
+```
+class Blog extends React.Component {
+  render() { return ( <Section text={"Lorem"} bg_color={"#00FF00"}/> ); }
+}
+```
+
+Section should then be defined somewhere within scope. It will take a single "props" parameter, which should then have an attribute with the text for that section and another that specifies the background color.
+
+```
+function Section(props) {
+  return (
+    <div style={{backgroundColor: props.bg_color}}>
+      <p> {props.text} </p>
+    </div>
+  );
+}
+```
+
+With this basic structure, you can create any custom React component you want, except that **any user defined React Component should start with a capital letter** so that it isn't confused with a built in one. Don't forget to render your components with a call to ReactDOM.render().
+
+```
+ReactDOM.render( <Blog />, document.getElementById('root') );
+```
+
+For further reading consult the official React.js website:
+https://reactjs.org/docs/jsx-in-depth.html
